@@ -53,6 +53,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Differential_GrowthComponent.cs" />
     <Compile Include="DifferentialGrowthInfo.cs" />
+    <Compile Include="DifferentialLine.cs" />
+    <Compile Include="Node.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>
