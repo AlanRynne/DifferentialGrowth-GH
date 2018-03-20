@@ -18,8 +18,9 @@ namespace DifferentialGrowth
         public DifferentialGrowthComponent()
           : base("Differential-Growth", "DiffGrth",
             "Differential Growth 2D Algorithm",
-            "Alan", "Subcategory")
+            "Alan", "Growth")
         {
+            HasFinishedRunning = false;
         }
 
         /// <summary>
@@ -63,6 +64,7 @@ namespace DifferentialGrowth
                                          "If true, previous results will be erased",
                                          GH_ParamAccess.item,
                                          false);
+            // TODO: Add new BOOL input for Run command
         }
 
         /// <summary>
@@ -85,6 +87,7 @@ namespace DifferentialGrowth
                                        GH_ParamAccess.list);
         }
 
+
         // START - CUSTOM Component Fields
 
         DifferentialLine _diff_line = null; //DiffLine lives outside solveinstance to avoid re-instantiation
@@ -92,7 +95,7 @@ namespace DifferentialGrowth
         bool resetComponent; // When true, erase previous results and reset _diff_line
         DataTree<Line> runResults = new DataTree<Line>();
 
-        // FIELDS TO BE IMPLEMENTED YET INSIDE THE CODE!!!!!! (Brief description of what they should do)
+        // TODO: FIELDS TO BE IMPLEMENTED YET INSIDE THE CODE!!!!!! (Brief description of what they should do)
 
         bool runComponent; // When true, start timer to add +1 to actualRuns. It will allow for infinite runs, one at a time. "Kangaroo solver style"
 
@@ -102,7 +105,29 @@ namespace DifferentialGrowth
 
         GH_Time time = new GH_Time(); // Timer module or connection to GH timer. Should +1 ACTUALRUNS when time per run has been reached AND solution has ended.
 
-        // Custom message on component when running like K2. See tutorials and GH Forum, solution is there.
+        // Public properties
+
+        /// TODO: This was copied directly from the GH Component guides! must be changed to switch between
+        /// 3 strings "Initial", "Running" & "Converged". Additionally, it would be wise to add one more
+        /// states to the Message: "Paused" when runComponent is false.
+
+        private bool m_absolute = false;
+        public bool HasFinishedRunning
+        {
+            get { return m_absolute; }
+            set
+            {
+                m_absolute = value;
+                if ((m_absolute))
+                {
+                    Message = "Stopped";
+                }
+                else
+                {
+                    Message = "Running";
+                }
+            }
+        }
 
 
         //END - CUSTOM Component Fields
@@ -211,9 +236,7 @@ namespace DifferentialGrowth
 
             // ----------------------------- SET OUTPUT DATA ------------------------------------
 
-
             DA.SetDataTree(0,runResults);
-
         }
 
 
@@ -240,7 +263,6 @@ namespace DifferentialGrowth
         {
             get { return new Guid("e1d967e7-45b1-40b1-a7a2-dc374db78a10"); }
         }
-
     }
 
 }
