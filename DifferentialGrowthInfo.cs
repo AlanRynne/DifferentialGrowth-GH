@@ -43,7 +43,7 @@ namespace DifferentialGrowth
         get
         {
             //Return a string identifying you or your company.
-            return "";
+            return "Alan Rynne";
         }
     }
     public override string AuthorContact
@@ -51,7 +51,7 @@ namespace DifferentialGrowth
         get
         {
             //Return a string representing your preferred contact details.
-            return "";
+            return "www.rynne.es - alan@rynne.es";
         }
     }
 }

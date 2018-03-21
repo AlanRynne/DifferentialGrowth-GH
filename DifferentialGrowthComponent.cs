@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using Grasshopper;
 using Grasshopper.Kernel;
 using Grasshopper.Kernel.Types;
@@ -249,7 +250,7 @@ namespace DifferentialGrowth
             get
             {
                 // You can add image files to your project resources and access them like this:
-                //return Resources.IconForThisComponent;
+                // return Resources.IconForThisComponent;
                 return null;
             }
         }
