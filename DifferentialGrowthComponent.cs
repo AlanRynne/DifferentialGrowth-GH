@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Drawing;
+using System.Resources;
 using Grasshopper;
 using Grasshopper.Kernel;
 using Grasshopper.Kernel.Types;
@@ -65,6 +66,7 @@ namespace DifferentialGrowth
                                          "If true, previous results will be erased",
                                          GH_ParamAccess.item,
                                          false);
+            
             // TODO: Add new BOOL input for Run command
         }
 
@@ -212,10 +214,6 @@ namespace DifferentialGrowth
             }
 
 
-
-
-
-
             // ----------------------------- RUN DIFFERENTIAL LINE ------------------------------
 
             // Check if DifferentialLine hasn't run
@@ -250,7 +248,7 @@ namespace DifferentialGrowth
             get
             {
                 // You can add image files to your project resources and access them like this:
-                // return Resources.IconForThisComponent;
+                // Resources.IconForThisComponent;
                 return null;
             }
         }
@@ -265,7 +263,6 @@ namespace DifferentialGrowth
             get { return new Guid("e1d967e7-45b1-40b1-a7a2-dc374db78a10"); }
         }
     }
-
 }
 
 
