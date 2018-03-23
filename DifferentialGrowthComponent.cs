@@ -1,10 +1,14 @@
 ﻿using System;
 using System.Drawing;
+using System.Drawing.Imaging;
+using System.Media;
+using System.IO;
 using System.Resources;
 using Grasshopper;
 using Grasshopper.Kernel;
 using Grasshopper.Kernel.Types;
 using Rhino.Geometry;
+using DifferentialGrowth;
 
 namespace DifferentialGrowth
 {
@@ -22,7 +26,9 @@ namespace DifferentialGrowth
             "Differential Growth 2D Algorithm",
             "Alan", "Growth")
         {
+            // Initialize any Class level variable here.
             HasFinishedRunning = false;
+
         }
 
         /// <summary>
@@ -62,12 +68,16 @@ namespace DifferentialGrowth
                                         GH_ParamAccess.item, 
                                         5);
             pManager.AddBooleanParameter("RESET",
-                                         "reset",
+                                         "Reset",
                                          "If true, previous results will be erased",
                                          GH_ParamAccess.item,
                                          false);
             
-            // TODO: Add new BOOL input for Run command
+            pManager.AddBooleanParameter("Run", 
+                                         "Run Component", 
+                                         "Set to TRUE to start running", 
+                                         GH_ParamAccess.item, 
+                                         false);
         }
 
         /// <summary>
@@ -76,15 +86,15 @@ namespace DifferentialGrowth
         protected override void RegisterOutputParams(GH_Component.GH_OutputParamManager pManager)
         {
             //Add Output parameters
-            pManager.AddCurveParameter("Results",
-                                       "R",
-                                       "Resulting curves of differential growth process",
+            pManager.AddNumberParameter("Iterations",
+                                       "i",
+                                       "Current Iterations",
                                        GH_ParamAccess.tree);
             pManager.AddPointParameter("Final Points",
                                        "P",
                                        "List of points corresponding to the last iteration",
                                        GH_ParamAccess.list);
-            pManager.AddPointParameter("Final Lines",
+            pManager.AddLineParameter("Final Lines",
                                        "L",
                                        "List of lines corresponding to the last iteration",
                                        GH_ParamAccess.list);
@@ -97,31 +107,23 @@ namespace DifferentialGrowth
         int actualRuns = 0; // Store the ammount of actual runs of the diffline
         bool resetComponent; // When true, erase previous results and reset _diff_line
         DataTree<Line> runResults = new DataTree<Line>();
-
-        // TODO: FIELDS TO BE IMPLEMENTED YET INSIDE THE CODE!!!!!! (Brief description of what they should do)
-
         bool runComponent; // When true, start timer to add +1 to actualRuns. It will allow for infinite runs, one at a time. "Kangaroo solver style"
-
         bool diffLineHasFinishedRunning; // TRUE if current _diffLine.Run() call has ended. FALSE on start.
-
-        double minimumRunDuration = 1; // IN SECONDS!! Don't know if it is the correct value or it should be changed to an actual instance of gh_time.
-
-        GH_Time time = new GH_Time(); // Timer module or connection to GH timer. Should +1 ACTUALRUNS when time per run has been reached AND solution has ended.
 
         // Public properties
 
-        /// TODO: This was copied directly from the GH Component guides! must be changed to switch between
-        /// 3 strings "Initial", "Running" & "Converged". Additionally, it would be wise to add one more
+        /// TODO:
+        /// This was copied directly from the GH Component guides! must be changed to switch between
+        /// 3 strings "Initial", "Running" and "Converged". Aditionally, it would be wise to add one more
         /// states to the Message: "Paused" when runComponent is false.
 
-        private bool m_absolute = false;
         public bool HasFinishedRunning
         {
-            get { return m_absolute; }
+            get { return diffLineHasFinishedRunning; }
             set
             {
-                m_absolute = value;
-                if ((m_absolute))
+                diffLineHasFinishedRunning = value;
+                if ((diffLineHasFinishedRunning))
                 {
                     Message = "Stopped";
                 }
@@ -134,7 +136,6 @@ namespace DifferentialGrowth
 
 
         //END - CUSTOM Component Fields
-
 
         /// <summary>
         /// This is the method that actually does the work.
@@ -166,7 +167,17 @@ namespace DifferentialGrowth
 
             if (!DA.GetData(6, ref resetComponent)) return;
 
+            if (!DA.GetData(7, ref runComponent)) return;
+
+
             // ---------------- VALUE CHECKING ----------------
+
+            if (!runComponent)
+            {
+                HasFinishedRunning = true;
+            } else {
+                HasFinishedRunning = false;
+            }
 
             // Check for reset
             if (resetComponent) 
@@ -176,16 +187,16 @@ namespace DifferentialGrowth
                 actualRuns = 0;
             }
 
-            // Check if iterations has increased more than actual runs.
+            //// Check if iterations has increased more than actual runs.
+            //if (runIterations >= actualRuns)
+            //{
+            //    runIterations -= actualRuns;
+            //}
+            //else
+            //{
+            //    runIterations = 0;
+            //}
 
-            if (runIterations >= actualRuns)
-            {
-                runIterations -= actualRuns;
-            }
-            else
-            {
-                runIterations = 0;
-            }
             // Check if DifferentialLine has been instantiated
             if (_diff_line == null)
             {
@@ -201,7 +212,7 @@ namespace DifferentialGrowth
                 double rayStart = 10;
 
                 for (double a = 0; a < 2 * Math.PI; a += angInc)
-               { // Create new Nodes
+                { // Create new Nodes
                     double tempX = 0 + Math.Cos(a) * rayStart;
                     double tempY = 0 + Math.Sin(a) * rayStart;
 
@@ -216,26 +227,32 @@ namespace DifferentialGrowth
 
             // ----------------------------- RUN DIFFERENTIAL LINE ------------------------------
 
-            // Check if DifferentialLine hasn't run
-            if (actualRuns == 0)
-            { //OUTPUT Initial Curve
-                runResults.AddRange(_diff_line.RenderLine(), new Grasshopper.Kernel.Data.GH_Path(0));
-            }
-            // Run differential growth loop
-            for (int i = 0; i < runIterations; i++)
+            if (runComponent)
             {
-                _diff_line.Run(); // Run diff line once
-                actualRuns++; //Add +1 to actualRuns, component class value holder.
+                // Check if DifferentialLine hasn't run
+                if (actualRuns == 0)
+                { //OUTPUT Initial Curve
+                    runResults.AddRange(_diff_line.RenderLine(), new Grasshopper.Kernel.Data.GH_Path(0));
+                }
+
+                if (actualRuns < runIterations)
+                {
+                    _diff_line.Run(); // Run diff line once
+                    actualRuns++; //Add +1 to actualRuns, component class value holder.
+                } else {
+                    HasFinishedRunning = true;
+                }
+
 
                 //Add iteration result to component class tree
-                runResults.AddRange(_diff_line.RenderLine(), new Grasshopper.Kernel.Data.GH_Path(actualRuns));
+
+                // ----------------------------- SET OUTPUT DATA ------------------------------------
+
+
+                DA.SetData(0, actualRuns);
+                DA.SetDataList(2, _diff_line.RenderLine());
             }
 
-
-
-            // ----------------------------- SET OUTPUT DATA ------------------------------------
-
-            DA.SetDataTree(0,runResults);
         }
 
 
@@ -248,8 +265,8 @@ namespace DifferentialGrowth
             get
             {
                 // You can add image files to your project resources and access them like this:
-                // Resources.IconForThisComponent;
-                return null;
+                //Resources.IconForThisComponent;
+                return Properties.Resources.DifferentialLineICON;
             }
         }
 
