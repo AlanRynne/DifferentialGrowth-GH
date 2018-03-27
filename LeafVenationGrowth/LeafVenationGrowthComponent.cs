@@ -17,9 +17,9 @@ namespace LeafVenationGrowth
         /// new tabs/panels will automatically be created.
         /// </summary>
         public LeafVenationGrowthComponent()
-          : base("LeafVenationGrowth", "Nickname",
-            "LeafVenationGrowth description",
-            "Category", "Subcategory")
+          : base("LeafVenationGrowth", "LeafVen",
+            "LeafVenationGrowth Algorithm Implementation",
+            "Alan", "Growth")
         {
         }
 
@@ -28,6 +28,20 @@ namespace LeafVenationGrowth
         /// </summary>
         protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager)
         {
+            // Mandatory parameters
+            pManager.AddCurveParameter("Boundary","B","Initial leaf boundary edge curve",GH_ParamAccess.item);
+            pManager.AddNumberParameter("Start Point","P","Inivital leaf venation node",GH_ParamAccess.item);
+
+            // Optional parameters
+            pManager.AddNumberParameter("Marginal Growth", "mG", "Marginal growth factor", GH_ParamAccess.item, 1.00);
+            pManager.AddNumberParameter("Uniform Growth", "uG", "Uniform growth factor",GH_ParamAccess.item, 1.00);
+            pManager.AddNumberParameter("Auxin Birth Distance", "dA", "Auxin/Auxin Birth Distance", GH_ParamAccess.item);
+            pManager.AddNumberParameter("Vein Birth Distance", "dV", "New vein node creation distance", GH_ParamAccess.item);
+
+            // Control Paramteres
+            pManager.AddBooleanParameter("Reset", "Reset", "Reset", GH_ParamAccess.item, false);
+            pManager.AddBooleanParameter("Run", "Run", "Run", GH_ParamAccess.item, false);
+
         }
 
         /// <summary>
@@ -35,6 +49,9 @@ namespace LeafVenationGrowth
         /// </summary>
         protected override void RegisterOutputParams(GH_Component.GH_OutputParamManager pManager)
         {
+            pManager.AddLineParameter("LeafVeins","lV","Resulting Leaf Veins",GH_ParamAccess.list);
+            pManager.AddPointParameter("LeafNodes","lN","Resulting Leaf Nodes", GH_ParamAccess.list);
+
         }
 
         /// <summary>
@@ -44,6 +61,8 @@ namespace LeafVenationGrowth
         /// to store data in output parameters.</param>
         protected override void SolveInstance(IGH_DataAccess DA)
         {
+            
+            
         }
 
         /// <summary>
