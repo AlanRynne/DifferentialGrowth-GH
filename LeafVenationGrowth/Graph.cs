@@ -37,21 +37,26 @@ namespace LeafVenationGrowth
         }
 
         // Methods
-        public void AddNewVertexTo(Vertex parent, Vertex newVert)
+        public void AddNewVertexToClosest(Point3d data)
         {
-            newVert.parent = parent;
-            parent.children.Add(newVert);
+            Vertex parent = FindClosestVertexFrom(data);
+            Vertex newVert = new Vertex(data, parent);
 
             _data.Add(newVert.position);
             _vertices.Add(newVert);
-            _edges.Add(new Line(parent.position,newVert.position));
+            //_edges.Add(new Line(parent.position,newVert.position));
         }
 
-        public Vertex FindClosestVertexTo(Vertex vert)
+        private Vertex FindClosestVertexFrom(Point3d position)
         {
-            int i = _data.ClosestPoint(vert.position);
+            if (_vertices.Count > 0) {
+                int i = _data.ClosestPoint(position);
+                return _vertices[i];
+            }
+            else {
+                return null;
+            }
 
-            return _vertices[i];
         }
 
         public List<double> CalculateVertexWeigth()
@@ -84,9 +89,9 @@ namespace LeafVenationGrowth
         public double Weight 
         {
             get {
-                if (!weightWasCalculated){
-                    CalculateWeight();
-                }
+                //if (!weightWasCalculated){
+                //    CalculateWeight();
+                //}
                 return _weight;
             }
         }
@@ -96,7 +101,10 @@ namespace LeafVenationGrowth
         {
             position = pos;
             _weight = 0.0;
-            parent = par;
+            if (par != null) {
+                parent = par;
+                parent.children.Add(this);
+            }
             children = new List<Vertex>();
             weightWasCalculated = false;
         }
