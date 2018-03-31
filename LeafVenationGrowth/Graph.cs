@@ -9,6 +9,9 @@ namespace LeafVenationGrowth
 {
     public class Graph
     {
+        // CONSTANTS
+        private readonly double MAX_NODE_DIST = 10.0;
+
         // Private variables
         private PointCloud _data;
         private List<Vertex> _vertices;
@@ -41,10 +44,11 @@ namespace LeafVenationGrowth
         {
             Vertex parent = FindClosestVertexFrom(data);
             Vertex newVert = new Vertex(data, parent);
+            newVert = CheckAndCorrectForMaxDistance(newVert);
 
             _data.Add(newVert.position);
             _vertices.Add(newVert);
-            //_edges.Add(new Line(parent.position,newVert.position));
+            _edges.Add(new Line(parent.position,newVert.position));
         }
 
         private Vertex FindClosestVertexFrom(Point3d position)
@@ -58,7 +62,16 @@ namespace LeafVenationGrowth
             }
 
         }
+        private Vertex CheckAndCorrectForMaxDistance(Vertex vert)
+        {
+            Vector3d vector = vert.position - vert.parent.position;
 
+            if (vector.Length > MAX_NODE_DIST) {
+                vector.Unitize();
+                vector *= MAX_NODE_DIST;
+            }
+            return vert;
+        }
         public List<double> CalculateVertexWeigth()
         {
             // Create a list to hold the vertex weight values
@@ -89,9 +102,9 @@ namespace LeafVenationGrowth
         public double Weight 
         {
             get {
-                //if (!weightWasCalculated){
-                //    CalculateWeight();
-                //}
+                if (!weightWasCalculated){
+                    CalculateWeight();
+                }
                 return _weight;
             }
         }
