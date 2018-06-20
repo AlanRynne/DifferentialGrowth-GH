@@ -4,7 +4,7 @@ using Rhino.Geometry;
 namespace DifferentialGrowth
 {
 
-    public class Node
+    public class DifferentialNode
     {
         //Properties
         public Point3d position;
@@ -17,7 +17,7 @@ namespace DifferentialGrowth
 
 
         //Constructor
-        public Node(double x, double y, double mF, double mS, DifferentialLine diff)
+        public DifferentialNode(double x, double y, double mF, double mS, DifferentialLine diff)
         {
             //Debug.WriteLine("Node: Constructor Called");
             acceleration = new Vector3d(0, 0, 0);

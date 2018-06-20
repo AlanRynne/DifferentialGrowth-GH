@@ -19,7 +19,7 @@ namespace DifferentialGrowth
         get
         {
             //Return a 24x24 pixel bitmap to represent this GHA library.
-            return null;
+            return Properties.Resources.DifferentialLineICON;
         }
     }
     public override string Description

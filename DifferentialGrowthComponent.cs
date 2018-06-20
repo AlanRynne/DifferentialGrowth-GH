@@ -216,7 +216,7 @@ namespace DifferentialGrowth
                     double tempX = 0 + Math.Cos(a) * rayStart;
                     double tempY = 0 + Math.Sin(a) * rayStart;
 
-                    _diff_line.AddNode(new Node(tempX,
+                    _diff_line.AddNode(new DifferentialNode(tempX,
                                                 tempY,
                                                 _diff_line.maxForce,
                                                 _diff_line.maxSpeed,
@@ -268,6 +268,7 @@ namespace DifferentialGrowth
                 //Resources.IconForThisComponent;
                 return Properties.Resources.DifferentialLineICON;
             }
+
         }
 
         /// <summary>

@@ -9,7 +9,7 @@ namespace DifferentialGrowth
     public class DifferentialLine
     {
         // Public Fields
-        public List<Node> nodes;
+        public List<DifferentialNode> nodes;
         public double maxForce;
         public double maxSpeed;
         public double desiredSeparation;
@@ -26,7 +26,7 @@ namespace DifferentialGrowth
                                 double eL)
         {
             Debug.WriteLine("DiffLine: Constructor Called");
-            nodes = new List<Node>();
+            nodes = new List<DifferentialNode>();
             maxForce = mF;
             maxSpeed = mS;
             desiredSeparation = dS;
@@ -45,13 +45,13 @@ namespace DifferentialGrowth
             this.Growth();
         }
 
-        public void AddNode(Node n)
+        public void AddNode(DifferentialNode n)
         {
             //Debug.WriteLine("DiffLine: AddNode() Method Called");
             nodes.Add(n);
         }
 
-        public void AddNodeAt(Node n, int index)
+        public void AddNodeAt(DifferentialNode n, int index)
         {
             //Debug.WriteLine("DiffLine: AddNodeAt({0}) Method Called", index);
             nodes.Insert(index, n);
@@ -65,8 +65,8 @@ namespace DifferentialGrowth
 
             for (int i = 0; i < nodes.Count - 1; i++) //Iterate all points
             {
-                Node n1 = nodes[i];
-                Node n2 = nodes[i + 1];
+                DifferentialNode n1 = nodes[i];
+                DifferentialNode n2 = nodes[i + 1];
                 double d = n1.position.DistanceTo(n2.position); //Get distance
 
                 //Basic growth rule
@@ -75,7 +75,7 @@ namespace DifferentialGrowth
                     int index = nodes.IndexOf(n2);
                     Point3d middleNodePosition = (n1.position + n2.position) / 2;
                     nodes.Insert(index,
-                                     new Node(middleNodePosition.X,
+                                     new DifferentialNode(middleNodePosition.X,
                                               middleNodePosition.Y,
                                               maxForce,
                                               maxSpeed,
@@ -113,8 +113,8 @@ namespace DifferentialGrowth
             List<Vector3d> separateForces = new List<Vector3d>(n);
             List<int> nearNodes = new List<int>(n);
 
-            Node nodei;
-            Node nodej;
+            DifferentialNode nodei;
+            DifferentialNode nodej;
 
             for (int w = 0; w < n; w++)
             {
@@ -168,7 +168,7 @@ namespace DifferentialGrowth
             return separateForces;
         }
 
-        public Vector3d GetSeparationForce(Node n1, Node n2)
+        public Vector3d GetSeparationForce(DifferentialNode n1, DifferentialNode n2)
         {
             //Debug.WriteLine("DiffLine: GetSeparationForce() Method Called");
 
